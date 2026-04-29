@@ -1,0 +1,183 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: finsight-postgres
+    environment:
+      POSTGRES_DB: fin_platform
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secretpw
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin -d fin_platform"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: finsight-redis
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  auth-service:
+    build:
+      context: .
+      dockerfile: backend/auth-service/Dockerfile
+    container_name: finsight-auth-service
+    ports:
+      - "8001:8001"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: fin_platform
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secretpw
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      JWT_SECRET: supersecretkey123456789012345678901234567890
+      JWT_EXPIRE_MINUTES: 60
+      FRONTEND_URL: http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  project-service:
+    build:
+      context: .
+      dockerfile: backend/project-service/Dockerfile
+    container_name: finsight-project-service
+    ports:
+      - "8002:8002"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: fin_platform
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secretpw
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      FRONTEND_URL: http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  forecasting-service:
+    build:
+      context: .
+      dockerfile: backend/forecasting-service/Dockerfile
+    container_name: finsight-forecasting-service
+    ports:
+      - "8003:8003"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: fin_platform
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secretpw
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      FRONTEND_URL: http://localhost:3000
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8003/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  assistant-service:
+    build:
+      context: .
+      dockerfile: backend/assistant-service/Dockerfile
+    container_name: finsight-assistant-service
+    ports:
+      - "8004:8004"
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: fin_platform
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: secretpw
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      FRONTEND_URL: http://localhost:3000
+      OPENAI_API_KEY: ${OPENAI_API_KEY:-}
+      LLM_PROVIDER: openai
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8004/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: finsight-frontend
+    ports:
+      - "3000:3000"
+    environment:
+      VITE_AUTH_SERVICE_URL: http://localhost:8001
+      VITE_PROJECT_SERVICE_URL: http://localhost:8002
+      VITE_FORECASTING_SERVICE_URL: http://localhost:8003
+      VITE_ASSISTANT_SERVICE_URL: http://localhost:8004
+    depends_on:
+      - auth-service
+      - project-service
+      - forecasting-service
+      - assistant-service
+
+  airflow:
+    build:
+      context: .
+      dockerfile: backend/etl/airflow/Dockerfile
+    container_name: finsight-airflow
+    ports:
+      - "8080:8080"
+    environment:
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://admin:secretpw@postgres:5432/fin_platform
+      AIRFLOW__CORE__FERNET_KEY: ZmFyMDEza2V5MTIzNDU2Nzg5MDEyMzQ1Njc4OTAxMjM0NTY3ODkwMTI=
+      AIRFLOW__API__AUTH_BACKEND: airflow.api.auth.backend.basic_auth
+    depends_on:
+      postgres:
+        condition: service_healthy
+    command: airflow webserver
+
+volumes:
+  postgres_data:
+
+networks:
+  default:
+    name: finsight-network

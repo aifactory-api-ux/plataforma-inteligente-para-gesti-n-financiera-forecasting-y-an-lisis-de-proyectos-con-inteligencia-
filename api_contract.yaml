@@ -1,0 +1,325 @@
+openapi: 3.1.0
+info:
+  title: Derived API Contract
+  version: 1.0.0
+paths:
+  /api/auth/login**:
+    post:
+      operationId: post_api_auth_login
+      responses:
+        '201':
+          description: Derived from SPEC.md
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/auth/logout**:
+    post:
+      operationId: post_api_auth_logout
+      responses:
+        '201':
+          description: Derived from SPEC.md
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/auth/me**:
+    get:
+      operationId: get_api_auth_me
+      responses:
+        '200':
+          description: Derived from SPEC.md
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/budgets/items/{id}**:
+    patch:
+      operationId: patch_api_budgets_items_id
+      responses:
+        '200':
+          description: Derived from SPEC.md
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/budgets/{budget_version_id}/items/**:
+    get:
+      operationId: get_api_budgets_budget_version_id_items
+      responses:
+        '200':
+          description: Derived from SPEC.md
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/forecast/{forecast_scenario_id}/shap/**:
+    get:
+      operationId: get_api_forecast_forecast_scenario_id_shap
+      responses:
+        '200':
+          description: Derived from SPEC.md
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/projects/**:
+    get:
+      operationId: get_api_projects
+      responses:
+        '200':
+          description: Derived from SPEC.md
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      operationId: post_api_projects
+      responses:
+        '201':
+          description: Derived from SPEC.md
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/projects/{id}**:
+    delete:
+      operationId: delete_api_projects_id
+      responses:
+        '204':
+          description: Derived from SPEC.md
+    get:
+      operationId: get_api_projects_id
+      responses:
+        '200':
+          description: Derived from SPEC.md
+          content:
+            application/json:
+              schema:
+                type: object
+    patch:
+      operationId: patch_api_projects_id
+      responses:
+        '200':
+          description: Derived from SPEC.md
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/projects/{project_id}/budgets/**:
+    get:
+      operationId: get_api_projects_project_id_budgets
+      responses:
+        '200':
+          description: Derived from SPEC.md
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      operationId: post_api_projects_project_id_budgets
+      responses:
+        '201':
+          description: Derived from SPEC.md
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/projects/{project_id}/chat/**:
+    get:
+      operationId: get_api_projects_project_id_chat
+      responses:
+        '200':
+          description: Derived from SPEC.md
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      operationId: post_api_projects_project_id_chat
+      responses:
+        '201':
+          description: Derived from SPEC.md
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/projects/{project_id}/forecast/**:
+    get:
+      operationId: get_api_projects_project_id_forecast
+      responses:
+        '200':
+          description: Derived from SPEC.md
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      operationId: post_api_projects_project_id_forecast
+      responses:
+        '201':
+          description: Derived from SPEC.md
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/projects/{project_id}/recommendations/**:
+    get:
+      operationId: get_api_projects_project_id_recommendations
+      responses:
+        '200':
+          description: Derived from SPEC.md
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      operationId: post_api_projects_project_id_recommendations
+      responses:
+        '201':
+          description: Derived from SPEC.md
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/projects/{project_id}/risks/**:
+    get:
+      operationId: get_api_projects_project_id_risks
+      responses:
+        '200':
+          description: Derived from SPEC.md
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      operationId: post_api_projects_project_id_risks
+      responses:
+        '201':
+          description: Derived from SPEC.md
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/risks/{id}**:
+    patch:
+      operationId: patch_api_risks_id
+      responses:
+        '200':
+          description: Derived from SPEC.md
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/users/**:
+    get:
+      operationId: get_api_users
+      responses:
+        '200':
+          description: Derived from SPEC.md
+          content:
+            application/json:
+              schema:
+                type: object
+    post:
+      operationId: post_api_users
+      responses:
+        '201':
+          description: Derived from SPEC.md
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/users/{id}**:
+    delete:
+      operationId: delete_api_users_id
+      responses:
+        '204':
+          description: Derived from SPEC.md
+    patch:
+      operationId: patch_api_users_id
+      responses:
+        '200':
+          description: Derived from SPEC.md
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+          content:
+            application/json:
+              schema:
+                type: object

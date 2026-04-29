@@ -1,0 +1,37 @@
+:root {
+  --color-primary-navy: #1E293B;
+  --color-primary-blue: #3B82F6;
+  --color-primary-lightBlue: #60A5FA;
+  --color-primary-sky: #0EA5E9;
+  --color-semantic-success: #22C55E;
+  --color-semantic-warning: #F59E0B;
+  --color-semantic-error: #EF4444;
+  --color-semantic-info: #3B82F6;
+  --color-neutral-50: #F9FAFB;
+  --color-neutral-100: #F3F4F6;
+  --color-neutral-200: #E5E7EB;
+  --color-neutral-300: #D1D5DB;
+  --color-neutral-400: #9CA3AF;
+  --color-neutral-500: #6B7280;
+  --color-neutral-600: #4B5563;
+  --color-neutral-700: #374151;
+  --color-neutral-800: #1F2937;
+  --color-neutral-900: #111827;
+  --color-surface-background: #F9FAFB;
+  --color-surface-card: #FFFFFF;
+  --color-surface-sidebar: #1E293B;
+  --color-surface-header: #FFFFFF;
+}
+
+.tokens-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+}
+
+.token-card {
+  background: var(--color-surface-card);
+  border-radius: 0.5rem;
+  padding: 1rem;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
