@@ -1,0 +1,209 @@
+# API_CONTRACT.md
+
+---
+
+## Auth Service
+
+| Method | Path                | Auth Required | Request Body                                                                 | Response Body                                                                                       | Status Codes |
+|--------|---------------------|--------------|------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------|--------------|
+| POST   | /api/auth/login     | No           | `{ email: string, password: string }`                                        | `{ access_token: string, token_type: "bearer", user: User }`                                        | 200          |
+| POST   | /api/auth/logout    | Yes          | `{}`                                                                         | `{ success: boolean }`                                                                              | 200          |
+| GET    | /api/auth/me        | Yes          | —                                                                            | `User`                                                                                              | 200          |
+
+---
+
+## Project Service
+
+| Method | Path                              | Auth Required | Request Body                                                                                                 | Response Body                                 | Status Codes |
+|--------|-----------------------------------|--------------|--------------------------------------------------------------------------------------------------------------|-----------------------------------------------|--------------|
+| GET    | /api/projects                     | Yes          | — (Query: `?search=string&status=string`)                                                                    | `{ projects: Project[] }`                     | 200          |
+| POST   | /api/projects                     | Yes          | `{ name: string, description?: string, start_date: string, end_date?: string }`                              | `Project`                                     | 201          |
+| GET    | /api/projects/{project_id}        | Yes          | —                                                                                                            | `Project`                                     | 200          |
+| PUT    | /api/projects/{project_id}        | Yes          | `{ name?: string, description?: string, status?: string, start_date?: string, end_date?: string }`           | `Project`                                     | 200          |
+| DELETE | /api/projects/{project_id}        | Yes          | —                                                                                                            | `{ success: boolean }`                        | 200          |
+
+---
+
+## Budget Service
+
+| Method | Path                                             | Auth Required | Request Body                                                                                      | Response Body                                 | Status Codes |
+|--------|--------------------------------------------------|--------------|---------------------------------------------------------------------------------------------------|-----------------------------------------------|--------------|
+| GET    | /api/projects/{project_id}/budgets               | Yes          | —                                                                                                | `{ versions: BudgetVersion[] }`               | 200          |
+| POST   | /api/projects/{project_id}/budgets               | Yes          | `{ items: { name: string, phase: string, amount_planned: number }[] }`                            | `BudgetVersion`                               | 201          |
+| GET    | /api/budgets/{budget_version_id}                 | Yes          | —                                                                                                | `BudgetVersion`                               | 200          |
+| POST   | /api/budgets/{budget_version_id}/baseline        | Yes          | `{}`                                                                                              | `{ success: boolean }`                        | 200          |
+
+---
+
+## Forecasting Service
+
+| Method | Path                                                      | Auth Required | Request Body                                                      | Response Body                                 | Status Codes |
+|--------|-----------------------------------------------------------|--------------|-------------------------------------------------------------------|-----------------------------------------------|--------------|
+| GET    | /api/projects/{project_id}/forecast                       | Yes          | —                                                                 | `{ scenarios: ForecastScenario[] }`           | 200          |
+| POST   | /api/projects/{project_id}/forecast/simulate              | Yes          | `{ scenario: "optimistic" \| "expected" \| "critical" }`          | `ForecastScenario`                            | 201          |
+| GET    | /api/forecast/{scenario_id}/explainability                | Yes          | —                                                                 | `ForecastExplainability`                      | 200          |
+
+---
+
+## Risk & Recommendation Service
+
+| Method | Path                                         | Auth Required | Request Body                                                      | Response Body                                 | Status Codes |
+|--------|----------------------------------------------|--------------|-------------------------------------------------------------------|-----------------------------------------------|--------------|
+| GET    | /api/projects/{project_id}/risks             | Yes          | —                                                                 | `{ risks: Risk[] }`                           | 200          |
+| POST   | /api/projects/{project_id}/risks             | Yes          | `{ description: string, probability: number, impact: number }`    | `Risk`                                        | 201          |
+| GET    | /api/projects/{project_id}/recommendations   | Yes          | —                                                                 | `{ recommendations: Recommendation[] }`       | 200          |
+
+---
+
+## Chat/AI Assistant Service
+
+| Method | Path                                 | Auth Required | Request Body                      | Response Body                                             | Status Codes |
+|--------|--------------------------------------|--------------|-----------------------------------|-----------------------------------------------------------|--------------|
+| GET    | /api/projects/{project_id}/chat      | Yes          | —                                 | `{ messages: ChatMessage[] }`                             | 200          |
+| POST   | /api/projects/{project_id}/chat      | Yes          | `{ message: string }`             | `{ reply: string, message: ChatMessage }`                 | 200          |
+
+---
+
+## Analytics & Reports
+
+| Method | Path                                   | Auth Required | Request Body                                                      | Response Body                                             | Status Codes |
+|--------|----------------------------------------|--------------|-------------------------------------------------------------------|-----------------------------------------------------------|--------------|
+| GET    | /api/projects/{project_id}/analytics   | Yes          | — (Query: `?from=YYYY-MM-DD&to=YYYY-MM-DD`)                      | `{ kpis: { name: string, value: number }[], charts: any }`| 200          |
+| POST   | /api/projects/{project_id}/reports     | Yes          | `{ format: "pdf" \| "csv" \| "xlsx", filters?: any }`             | `{ url: string }`                                         | 201          |
+
+---
+
+### Data Types
+
+#### User
+
+```json
+{
+  "id": number,
+  "email": string,
+  "full_name": string,
+  "role": "admin" | "analyst" | "manager",
+  "is_active": boolean,
+  "created_at": "ISO datetime"
+}
+```
+
+#### Project
+
+```json
+{
+  "id": number,
+  "name": string,
+  "description": string | null,
+  "status": "active" | "archived" | "draft",
+  "budget_total": number,
+  "execution_total": number,
+  "deviation": number,
+  "start_date": "ISO date",
+  "end_date": "ISO date" | null,
+  "owner_id": number,
+  "created_at": "ISO datetime"
+}
+```
+
+#### BudgetVersion
+
+```json
+{
+  "id": number,
+  "project_id": number,
+  "version": number,
+  "created_at": "ISO datetime",
+  "is_baseline": boolean,
+  "items": [BudgetItem]
+}
+```
+
+#### BudgetItem
+
+```json
+{
+  "id": number,
+  "budget_version_id": number,
+  "name": string,
+  "phase": string,
+  "amount_planned": number,
+  "amount_executed": number,
+  "status": "on_track" | "warning" | "over_budget",
+  "deviation": number
+}
+```
+
+#### ForecastScenario
+
+```json
+{
+  "id": number,
+  "project_id": number,
+  "scenario": "optimistic" | "expected" | "critical",
+  "forecast_date": "ISO date",
+  "forecast_value": number,
+  "confidence_lower": number,
+  "confidence_upper": number,
+  "generated_at": "ISO datetime"
+}
+```
+
+#### Risk
+
+```json
+{
+  "id": number,
+  "project_id": number,
+  "description": string,
+  "probability": number,
+  "impact": number,
+  "status": "open" | "mitigated" | "closed",
+  "created_at": "ISO datetime"
+}
+```
+
+#### Recommendation
+
+```json
+{
+  "id": number,
+  "project_id": number,
+  "text": string,
+  "source": "ai" | "manual",
+  "created_at": "ISO datetime"
+}
+```
+
+#### ChatMessage
+
+```json
+{
+  "id": number,
+  "project_id": number,
+  "sender": "user" | "assistant",
+  "message": string,
+  "timestamp": "ISO datetime"
+}
+```
+
+#### SHAPFeatureImportance
+
+```json
+{
+  "feature": string,
+  "importance": number
+}
+```
+
+#### ForecastExplainability
+
+```json
+{
+  "scenario_id": number,
+  "shap_values": [SHAPFeatureImportance],
+  "summary": string
+}
+```
+
+---
